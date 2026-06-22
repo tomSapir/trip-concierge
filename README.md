@@ -33,17 +33,17 @@
 
 ## About The Project
 
-> A multi-agent travel concierge built around a **Trip Agent** that decides one of three actions every
-> turn — **Continue**, **Recommend**, or **Book** — and three specialist **Advisors** that validate or
-> enrich each decision.
+> A multi-agent travel concierge built around a **Trip Agent** that decides one of four actions every
+> turn — **Continue**, **Recommend**, **Book**, or **Abandon** — and three specialist **Advisors** that
+> validate or enrich each decision.
 
 <div style="background: #272822; color: #f8f8f2; padding: 10px; border-radius: 8px;">
   <b>Technologies:</b> Python, LangChain, OpenAI (Chat, Embeddings, Fine-Tuning), Chroma, SQLAlchemy, Streamlit
 </div>
 
-This project deliberately reuses the architecture of a recruitment-chatbot project, re-themed as a
-travel concierge — a Main Agent + specialist Advisors, RAG over a document corpus, function calling to a
-SQL database, an end-to-end evaluation, and a fine-tuned sub-agent.
+This project is built on a Main Agent + specialist Advisors architecture: retrieval-augmented generation
+(RAG) over a document corpus, function calling to a SQL database, an end-to-end evaluation, and a
+fine-tuned sub-agent.
 
 ---
 
@@ -52,18 +52,19 @@ SQL database, an end-to-end evaluation, and a fine-tuned sub-agent.
 Every turn flows through this pipeline:
 
 1. **Trip Agent** reads the conversation history and proposes an action (`continue` / `recommend` /
-   `book`) plus a draft reply.
+   `book` / `abandon`) plus a draft reply.
 2. The decision is routed to the matching **Advisor** for validation or enrichment:
    - **Destination Advisor** — answers questions about places (climate, best season, attractions, food,
      visas) using semantic retrieval over a Chroma knowledge base of destination guides.
    - **Budget Advisor** — queries the package database (function calling) for the three best available
      flight + hotel packages within budget and rewrites the reply with concrete dates and prices.
    - **Booking Advisor** — confirms that the user has actually committed to a specific option before the
-     concierge finalizes. Fine-tuned for this binary classification task.
+     concierge finalizes. Fine-tuned for this binary classification task. (Walking away without booking
+     is the separate, unguarded `abandon` action.)
 3. If an Advisor disagrees with the Trip Agent (e.g. the Budget Advisor says *too early to recommend*),
    the action is demoted back to `continue`.
 
-See [`PLAN.md`](PLAN.md) for the full design, the mapping to the source project, and the build sequence.
+See [`PLAN.md`](PLAN.md) for the full design and the build sequence.
 
 ---
 
