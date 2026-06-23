@@ -1,0 +1,2 @@
+# Binary assets — never apply text/EOL conversion (it would corrupt them on checkout).
+*.pdf binary
