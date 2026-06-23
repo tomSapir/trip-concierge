@@ -184,7 +184,7 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
 ## Build sequence
 
 1. **Scaffold + config** ← *done*
-2. **Data layer** — destination registry; `package_db.py` (seed 2026–2027 + `get_packages`); generate
+2. **Data layer** ← *done* — destination registry; `package_db.py` (seed 2026–2027 + `get_packages`); generate
    destination guide PDFs + `guide_embedder.py`.
 3. **Agents** — `trip_agent.py` (4-action orchestrator, registry-backed suggestions);
    `destination_advisor.py` (RAG + out-of-set scoping); `budget_advisor.py` (veto → tool-call → grounded
