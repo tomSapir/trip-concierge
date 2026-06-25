@@ -12,8 +12,9 @@
 
 ---
 
-> **Status: scaffolding.** Repo structure, dependencies, and the build plan are in place. The agents,
-> data layer, UI, eval, and fine-tuning are being built out per [`PLAN.md`](PLAN.md). Checklist below
+> **Status: end-to-end app working.** The data layer, all four agents, the `get_concierge_response`
+> entry point, and the Streamlit UI are built and wired. Remaining work is the evaluation, prompt
+> tuning, the Booking Advisor fine-tune, and deployment — see [`PLAN.md`](PLAN.md). Checklist below
 > tracks progress.
 
 ---
@@ -109,7 +110,9 @@ will use the base LLM.
 streamlit run streamlit_app/streamlit_main.py
 ```
 
-_(Available once the UI is implemented — see the checklist.)_
+The chat opens; describe a trip, ask about a destination, get package options, and book one (or walk
+away). Both terminal actions — booking and abandoning — lock the chat and offer a "Plan a New Trip"
+reset.
 
 ---
 
@@ -149,10 +152,10 @@ trip-concierge/
 ## To-Do List
 
 - [x] Repo scaffold, dependencies, build plan
-- [ ] Package DB (`package_db.py`) — seed + `get_packages`
-- [ ] Destination guide corpus + Chroma embedder (`guide_embedder.py`)
-- [ ] Trip Agent + three advisors wired end-to-end
-- [ ] Streamlit chat UI
+- [x] Package DB (`package_db.py`) — seed + `get_packages`
+- [x] Destination guide corpus + Chroma embedder (`guide_embedder.py`)
+- [x] Trip Agent + three advisors wired end-to-end
+- [x] Streamlit chat UI
 - [ ] Labeled eval dataset + accuracy / confusion matrix
 - [ ] Few-shot prompt tuning
 - [ ] Supervised fine-tuning of the Booking Advisor

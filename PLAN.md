@@ -189,7 +189,7 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
 3. **Agents** ← *done* — `trip_agent.py` (4-action orchestrator, registry-backed suggestions);
    `destination_advisor.py` (RAG + out-of-set scoping); `budget_advisor.py` (veto → tool-call → grounded
    rewrite, soft date anchor); `booking_advisor.py` (binary, env-var swap + fallback). Wire `__init__.py`.
-4. **Entry point + UI** — `app/main.py` `get_concierge_response(messages, reference_date=None)`;
+4. **Entry point + UI** ← *done* — `app/main.py` `get_concierge_response(messages, reference_date=None)`;
    `streamlit_app/streamlit_main.py` (chat, typewriter, dual terminal lock + "Plan a New Trip").
 5. **Eval** — write `trip_conversations.json` (4 actions + 3 edges); build `test_evals.ipynb`; baseline.
 6. **Prompt tuning** — few-shot examples; re-eval.
