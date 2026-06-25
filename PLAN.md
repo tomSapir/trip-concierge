@@ -194,7 +194,10 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
 5. **Eval** ← *done* — `trip_conversations.json` (14 conversations / 34 turns, 4 actions + 3 edges);
    `test_evals.ipynb` (4×4 confusion matrix, per-class P/R/F1) + `run_evals.py` (re-runnable). Baseline
    **91.2%** (31/34); `book` recall (the Booking Advisor demoting genuine commitments) is the weak spot.
-6. **Prompt tuning** — few-shot examples; re-eval.
+6. **Prompt tuning** ← *done* — few-shot examples added to the Trip Agent (one per action + the edges:
+   musing→continue, out-of-set→continue, vibe-only→suggest) and the Booking Advisor (book/dont_book,
+   varied commitment phrasings). Re-eval **97.1%** (33/34), up from the 91.2% baseline — the `book`-recall
+   weak spot recovered.
 7. **Fine-tune** — `finetune_booking_advisor.ipynb`; set `BOOKING_ADVISOR_MODEL`; re-eval.
 8. **Deploy** — Streamlit Community Cloud (entry `streamlit_app/streamlit_main.py`, secrets in TOML).
 9. **Polish + README sync** — error handling, README in lockstep (NO genai mention).
