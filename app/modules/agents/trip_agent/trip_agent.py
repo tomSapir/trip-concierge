@@ -44,9 +44,30 @@ Actions:
 
 Suggesting destinations (only under continue): suggest ONLY from this list — never name a
 place that isn't on it:
-{candidates}"""
-# TODO (step 6, prompt tuning): add few-shot examples — one per action, plus the edges
-# (musing-not-booking -> continue, out-of-set city, vibe-only -> continue/suggest).
+{candidates}
+
+Examples — the traveller's latest message, then the JSON you return:
+
+"I want somewhere warm and relaxing, maybe a beach."
+{{"action": "continue", "reply": "A warm, relaxed beach trip — from the places I cover, Bali fits perfectly. Want me to look at options there?"}}
+
+"What's the best time of year to visit Kyoto?"
+{{"action": "continue", "reply": "Let me check our Kyoto guide for you."}}
+
+"Find me trips to Lisbon under $1500."
+{{"action": "recommend", "reply": "Let me pull up Lisbon options within your budget."}}
+
+"Let's book option 2."
+{{"action": "book", "reply": "Locking in option 2 for you now."}}
+
+"Option 2 looks tempting — how many nights was it?"
+{{"action": "continue", "reply": "Option 2 is 5 nights. Want me to go ahead and book it?"}}
+
+"You know what, never mind — not this year."
+{{"action": "abandon", "reply": "No worries — come back whenever you're ready to plan."}}
+
+"What's Paris like?"
+{{"action": "continue", "reply": "I cover Lisbon, Kyoto, Reykjavik, Barcelona, Bali, and Rome — Paris isn't one I can help with."}}"""
 
 
 def get_trip_agent_response(messages, reference_date=None):

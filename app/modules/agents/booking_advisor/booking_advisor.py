@@ -27,8 +27,24 @@ or is only musing / asking / hesitating.
 Reply with EXACTLY one word, lowercase, nothing else: book or dont_book.
 - book: a clear commitment to a specific option ("book option 2", "let's do the Lisbon one").
 - dont_book: musing, comparing, questions, or hesitation ("option 2 looks tempting…").
+
+A commitment counts even when the wording is casual or implicit — what matters is that the
+traveller is telling you to go ahead with one specific option, not still weighing them.
+
+Examples — the traveller's latest message, then your answer:
+- "Book option 2." -> book
+- "Let's do the Lisbon one." -> book
+- "Yes, go ahead and book it." -> book
+- "I'll take the second package." -> book
+- "Sounds great — lock in the Bali trip." -> book
+- "Perfect, let's go with option 1." -> book
+- "Option 2 looks tempting…" -> dont_book
+- "How many nights is option 1?" -> dont_book
+- "Which one would you recommend?" -> dont_book
+- "Hmm, let me think about it." -> dont_book
+- "Maybe the Rome one, but I'm not sure yet." -> dont_book
+- "Can you compare option 1 and 2?" -> dont_book
 """
-# TODO (step 6, prompt tuning): add a few-shot block of book / dont_book examples here.
 
 
 def _classify(convo):
