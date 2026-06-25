@@ -1,0 +1,42 @@
+{
+  "accuracy": 0.9117647058823529,
+  "n": 34,
+  "by_class": {
+    "precision": {
+      "continue": 0.8421052631578947,
+      "recommend": 1.0,
+      "book": 1.0,
+      "abandon": 1.0,
+      "accuracy": 0.9117647058823529,
+      "macro avg": 0.9605263157894737,
+      "weighted avg": 0.9256965944272446
+    },
+    "recall": {
+      "continue": 1.0,
+      "recommend": 1.0,
+      "book": 0.4,
+      "abandon": 1.0,
+      "accuracy": 0.9117647058823529,
+      "macro avg": 0.85,
+      "weighted avg": 0.9117647058823529
+    },
+    "f1-score": {
+      "continue": 0.9142857142857143,
+      "recommend": 1.0,
+      "book": 0.5714285714285714,
+      "abandon": 1.0,
+      "accuracy": 0.9117647058823529,
+      "macro avg": 0.8714285714285714,
+      "weighted avg": 0.8966386554621848
+    },
+    "support": {
+      "continue": 16.0,
+      "recommend": 9.0,
+      "book": 5.0,
+      "abandon": 4.0,
+      "accuracy": 0.9117647058823529,
+      "macro avg": 34.0,
+      "weighted avg": 34.0
+    }
+  }
+}

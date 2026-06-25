@@ -1,0 +1,158 @@
+{
+  "reference_date": "2026-06-24",
+  "notes": "Labeled eval set for get_concierge_response. Replay each `concierge` turn through get_concierge_response(history, reference_date) where history = every prior turn mapped to {role,content} (traveller->user, concierge->assistant); compare the returned action to that turn's `label`. Only `concierge` turns carry a label; `traveller` turns are null. Pass reference_date above so date-anchored cases stay deterministic. Gold concierge replies are grounded in the seeded packages.db (random.seed(42)) but are NOT scored — only the action label is.",
+  "conversations": [
+    {
+      "conversation_id": 1,
+      "scenario": "happy path: continue -> recommend -> book (Bali, no budget)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Hi! I'd love some help planning a trip.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Happy to help you plan! Where are you thinking of going, and roughly when? If you're not sure yet, tell me the kind of vibe you're after and I can suggest a few places.", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "I've settled on Bali. Can you show me what packages you have?", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Here are the best available Bali packages I found:\n1. Bali Stay 3 — depart Feb 17, 2027, 3 nights, $475\n2. Bali Stay 2 — depart Jun 11, 2027, 3 nights, $722\n3. Bali Stay 5 — depart Jul 14, 2026, 3 nights, $731\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 5, "speaker": "traveller", "text": "Let's book option 1.", "label": null},
+        {"turn_id": 6, "speaker": "concierge", "text": "You're booked! Bali — depart Feb 17, 2027, 3 nights, $475 🎉 Have an amazing trip!", "label": "book"}
+      ]
+    },
+    {
+      "conversation_id": 2,
+      "scenario": "happy path with destination question: continue (grounded Q) -> recommend -> book (Lisbon)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "What's the weather like in Lisbon in autumn?", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Autumn in Lisbon is mild and pleasant — daytime highs around the low 20s°C, cooler evenings, and far fewer crowds than summer. It's one of the nicest times to visit.", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Sounds lovely. Show me some trips to Lisbon.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Here are the best available Lisbon packages:\n1. Lisbon Stay 2 — depart Aug 12, 2026, 3 nights, $429\n2. Lisbon Stay 2 — depart Oct 9, 2026, 7 nights, $726\n3. Lisbon Stay 4 — depart Jun 13, 2026, 5 nights, $739\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 5, "speaker": "traveller", "text": "Book the first one, please.", "label": null},
+        {"turn_id": 6, "speaker": "concierge", "text": "Done! Lisbon — depart Aug 12, 2026, 3 nights, $429 🎉 You're all set!", "label": "book"}
+      ]
+    },
+    {
+      "conversation_id": 3,
+      "scenario": "abandon: walks away early without booking",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "I was thinking about a trip, but money's a bit tight right now.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "No rush at all — when you're ready, just tell me a vibe or a destination and a rough budget, and I'll find something that fits.", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Yeah, never mind — not this year.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "No worries — come back whenever you're ready to plan. Safe travels when the time comes! 👋", "label": "abandon"}
+      ]
+    },
+    {
+      "conversation_id": 4,
+      "scenario": "EDGE musing-then-booking: recommend -> continue (musing, Booking Advisor demotes) -> book (Reykjavik)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Show me trips to Reykjavik.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Here are the best available Reykjavik packages:\n1. Reykjavik Stay 1 — depart May 21, 2027, 3 nights, $861\n2. Reykjavik Stay 4 — depart Jun 13, 2026, 3 nights, $966\n3. Reykjavik Stay 4 — depart Oct 28, 2026, 7 nights, $1,114\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Hmm, option 2 looks tempting…", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "It's a lovely pick — June is a great time for the long daylight hours. Want me to go ahead and book option 2, or tell you a bit more about it first?", "label": "continue"},
+        {"turn_id": 5, "speaker": "traveller", "text": "Yes, let's book option 2.", "label": null},
+        {"turn_id": 6, "speaker": "concierge", "text": "Booked! Reykjavik — depart Jun 13, 2026, 3 nights, $966 🎉 Enjoy Iceland!", "label": "book"}
+      ]
+    },
+    {
+      "conversation_id": 5,
+      "scenario": "EDGE out-of-set question: continue (scoped) -> continue (in-set grounded Q)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "What's Paris like in spring?", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "I cover Lisbon, Kyoto, Reykjavik, Barcelona, Bali, and Rome — Paris isn't one I can help with. Would any of those work for you?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Got it. What about Kyoto then — what's it known for?", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Kyoto is famous for its classical temples, Zen gardens, geisha district in Gion, and seasonal beauty — cherry blossoms in spring and vivid maples in autumn. It's the cultural heart of Japan.", "label": "continue"}
+      ]
+    },
+    {
+      "conversation_id": 6,
+      "scenario": "EDGE out-of-set booking attempt: recommend -> continue (no packages, scoped) -> recommend (in-set, Barcelona)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Can you find me a trip to Paris?", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "I don't have trips to Paris — I cover Lisbon, Kyoto, Reykjavik, Barcelona, Bali, and Rome. Would you like options for one of those instead?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Ah okay — then find me something in Barcelona.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Here are the best available Barcelona packages:\n1. Barcelona Stay 3 — depart Jan 7, 2027, 5 nights, $609\n2. Barcelona Stay 1 — depart Jun 28, 2027, 5 nights, $1,305\n3. Barcelona Stay 4 — depart Jun 14, 2027, 7 nights, $1,736\nWhich one would you like to book?", "label": "recommend"}
+      ]
+    },
+    {
+      "conversation_id": 7,
+      "scenario": "EDGE nothing-in-budget: recommend -> continue (no fit nudge) -> recommend (raised budget) -> book (Lisbon)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "I'd like to go to Lisbon, but my whole budget is $300.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Nothing to Lisbon under $300 — the cheapest I have is $429. Want to raise the budget a little, or try another destination?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Okay, let's say up to $800 for Lisbon.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Here are the best available Lisbon packages under $800:\n1. Lisbon Stay 2 — depart Aug 12, 2026, 3 nights, $429\n2. Lisbon Stay 2 — depart Oct 9, 2026, 7 nights, $726\n3. Lisbon Stay 4 — depart Jun 13, 2026, 5 nights, $739\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 5, "speaker": "traveller", "text": "The $429 one sounds perfect — book it.", "label": null},
+        {"turn_id": 6, "speaker": "concierge", "text": "Booked! Lisbon — depart Aug 12, 2026, 3 nights, $429 🎉 You're all set!", "label": "book"}
+      ]
+    },
+    {
+      "conversation_id": 8,
+      "scenario": "EDGE vibe-only suggestion: continue (suggest, NOT recommend) -> continue (grounded Q)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "I want to go somewhere relaxing and beachy, but I haven't picked a place yet.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "For a relaxing beach trip, Bali (beach, relax, nature) or Barcelona (city, beach, nightlife) could both be a great fit. Want me to tell you more about either, or see some packages?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Tell me more about Bali.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Bali blends beaches, rice-terrace scenery, and a laid-back wellness culture. The dry season (roughly April–October) is the best time to go, and the south coast around Seminyak and Uluwatu is ideal for relaxing.", "label": "continue"}
+      ]
+    },
+    {
+      "conversation_id": 9,
+      "scenario": "abandon after recommend: recommend -> abandon (walks away once they see prices)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Show me what you've got for Kyoto.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Here are the best available Kyoto packages:\n1. Kyoto Stay 1 — depart Aug 27, 2026, 3 nights, $686\n2. Kyoto Stay 1 — depart Oct 2, 2026, 3 nights, $959\n3. Kyoto Stay 3 — depart Jan 15, 2027, 5 nights, $1,028\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Hmm, pricier than I hoped. I'll leave it for now — thanks anyway.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "No worries — come back whenever you're ready to plan. Take care! 👋", "label": "abandon"}
+      ]
+    },
+    {
+      "conversation_id": 10,
+      "scenario": "recommend without budget (budget optional): continue (greeting) -> recommend (Reykjavik)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Hi there!", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Hello! 👋 I can help you plan a trip — where would you like to go, or what kind of getaway are you in the mood for?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "I want to visit Reykjavik. What can you offer?", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Here are the best available Reykjavik packages:\n1. Reykjavik Stay 1 — depart May 21, 2027, 3 nights, $861\n2. Reykjavik Stay 4 — depart Jun 13, 2026, 3 nights, $966\n3. Reykjavik Stay 4 — depart Oct 28, 2026, 7 nights, $1,114\nWhich one would you like to book?", "label": "recommend"}
+      ]
+    },
+    {
+      "conversation_id": 11,
+      "scenario": "full path with suggestion + grounded Q: continue (suggest) -> continue (grounded Q) -> recommend -> book (Rome)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "I'm planning a foodie trip and I love history. Any ideas where to go?", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "For food and history, Lisbon (coastal, foodie, history) and Rome (history, culture, foodie) are both excellent fits. Would you like to hear more about either, or see some packages?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Rome sounds perfect. When's the best time to visit?", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "The best times for Rome are spring (April–June) and autumn (September–October) — warm but not scorching, and lighter crowds than the July–August peak.", "label": "continue"},
+        {"turn_id": 5, "speaker": "traveller", "text": "Great, show me some Rome packages.", "label": null},
+        {"turn_id": 6, "speaker": "concierge", "text": "Here are the best available Rome packages:\n1. Rome Stay 2 — depart Aug 31, 2026, 7 nights, $746\n2. Rome Stay 4 — depart Oct 20, 2026, 5 nights, $1,301\n3. Rome Stay 3 — depart Jul 14, 2026, 7 nights, $1,341\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 7, "speaker": "traveller", "text": "Book option 1.", "label": null},
+        {"turn_id": 8, "speaker": "concierge", "text": "Booked! Rome — depart Aug 31, 2026, 7 nights, $746 🎉 Buon viaggio!", "label": "book"}
+      ]
+    },
+    {
+      "conversation_id": 12,
+      "scenario": "abandon mid-planning: continue -> abandon (changes mind)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "I've been daydreaming about Bali lately.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Bali's wonderful! Want me to pull up some trip options, or tell you about the best time to go?", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "You know what, forget it — not the right time for me.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "No worries — come back whenever you're ready to plan. 👋", "label": "abandon"}
+      ]
+    },
+    {
+      "conversation_id": 13,
+      "scenario": "in-set grounded Q then abandon: continue (grounded safety Q) -> abandon (won't book)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Is Reykjavik safe for solo travelers?", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Very — Iceland consistently ranks among the safest countries in the world, and Reykjavik is welcoming and easy to get around for solo travelers. Standard common-sense precautions are all you need.", "label": "continue"},
+        {"turn_id": 3, "speaker": "traveller", "text": "Thanks, that answers it — I won't be booking anything today though.", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Of course — no pressure at all. Come back whenever you'd like to plan. Take care! 👋", "label": "abandon"}
+      ]
+    },
+    {
+      "conversation_id": 14,
+      "scenario": "EDGE comparison question during recommend (not a commitment): recommend -> continue (compares options)",
+      "turns": [
+        {"turn_id": 1, "speaker": "traveller", "text": "Show me Bali trips.", "label": null},
+        {"turn_id": 2, "speaker": "concierge", "text": "Here are the best available Bali packages:\n1. Bali Stay 3 — depart Feb 17, 2027, 3 nights, $475\n2. Bali Stay 2 — depart Jun 11, 2027, 3 nights, $722\n3. Bali Stay 5 — depart Jul 14, 2026, 3 nights, $731\nWhich one would you like to book?", "label": "recommend"},
+        {"turn_id": 3, "speaker": "traveller", "text": "How do options 1 and 2 compare — is one a nicer hotel?", "label": null},
+        {"turn_id": 4, "speaker": "concierge", "text": "Both are 3-night stays. Option 1 (Bali Stay 3, $475) is the better value and departs in February 2027; option 2 (Bali Stay 2, $722) departs in June 2027. They're different properties — happy to go into more detail on either before you decide.", "label": "continue"}
+      ]
+    }
+  ]
+}
