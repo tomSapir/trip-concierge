@@ -13,9 +13,9 @@
 ---
 
 > **Status: end-to-end app working.** The data layer, all four agents, the `get_concierge_response`
-> entry point, and the Streamlit UI are built and wired. Remaining work is the evaluation, prompt
-> tuning, the Booking Advisor fine-tune, and deployment — see [`PLAN.md`](PLAN.md). Checklist below
-> tracks progress.
+> entry point, and the Streamlit UI are built and wired, and the end-to-end evaluation is in place.
+> Remaining work is prompt tuning, the Booking Advisor fine-tune, and deployment — see
+> [`PLAN.md`](PLAN.md). Checklist below tracks progress.
 
 ---
 
@@ -140,6 +140,7 @@ trip-concierge/
 ├── tests/
 │   ├── trip_conversations.json                  ← labeled eval dataset
 │   ├── test_evals.ipynb                         ← evaluation notebook
+│   ├── run_evals.py                             ← standalone eval runner
 │   └── finetune_booking_advisor.ipynb           ← Booking Advisor fine-tuning
 ├── requirements.txt
 ├── .env.example
@@ -156,7 +157,7 @@ trip-concierge/
 - [x] Destination guide corpus + Chroma embedder (`guide_embedder.py`)
 - [x] Trip Agent + three advisors wired end-to-end
 - [x] Streamlit chat UI
-- [ ] Labeled eval dataset + accuracy / confusion matrix
+- [x] Labeled eval dataset + accuracy / confusion matrix
 - [ ] Few-shot prompt tuning
 - [ ] Supervised fine-tuning of the Booking Advisor
 - [ ] Streamlit Community Cloud deployment

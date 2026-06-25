@@ -191,7 +191,9 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
    rewrite, soft date anchor); `booking_advisor.py` (binary, env-var swap + fallback). Wire `__init__.py`.
 4. **Entry point + UI** ← *done* — `app/main.py` `get_concierge_response(messages, reference_date=None)`;
    `streamlit_app/streamlit_main.py` (chat, typewriter, dual terminal lock + "Plan a New Trip").
-5. **Eval** — write `trip_conversations.json` (4 actions + 3 edges); build `test_evals.ipynb`; baseline.
+5. **Eval** ← *done* — `trip_conversations.json` (14 conversations / 34 turns, 4 actions + 3 edges);
+   `test_evals.ipynb` (4×4 confusion matrix, per-class P/R/F1) + `run_evals.py` (re-runnable). Baseline
+   **91.2%** (31/34); `book` recall (the Booking Advisor demoting genuine commitments) is the weak spot.
 6. **Prompt tuning** — few-shot examples; re-eval.
 7. **Fine-tune** — `finetune_booking_advisor.ipynb`; set `BOOKING_ADVISOR_MODEL`; re-eval.
 8. **Deploy** — Streamlit Community Cloud (entry `streamlit_app/streamlit_main.py`, secrets in TOML).
