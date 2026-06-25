@@ -68,16 +68,24 @@ def get_budget_advisor_response(messages, reference_date=None):
         return ("continue", "Which destination are you considering? Once we settle on a "
                             "place, I can pull up concrete trip options.")
 
-    call = ai.tool_calls[0]
-    rows = json.loads(find_packages.invoke(call["args"]))
+    # The model may make MORE THAN ONE find_packages call (e.g. when the traveller asks to
+    # compare options). OpenAI requires every tool_call_id to get its own tool message, so we
+    # answer them ALL — not just the first — otherwise round 2 fails with a 400.
+    tool_messages = []
+    all_rows = []
+    for call in ai.tool_calls:
+        rows = json.loads(find_packages.invoke(call["args"]))
+        all_rows.extend(rows)
+        tool_messages.append(ToolMessage(json.dumps(rows, default=str), tool_call_id=call["id"]))
 
-    # Nothing fits (out-of-set city, or budget too low) -> honest nudge, demote to `continue`.
-    if not rows:
-        return ("continue", _no_fit_nudge(call["args"]))
+    # Nothing fits any call (out-of-set city, or budget too low) -> honest nudge, demote to `continue`.
+    if not all_rows:
+        return ("continue", _no_fit_nudge(ai.tool_calls[0]["args"]))
 
-    # Round 2: feed the real rows back so the model writes the list from grounded data.
+    # Round 2: feed the model its tool-call message plus every tool response so it writes the
+    # list from grounded data.
     convo.append(ai)
-    convo.append(ToolMessage(json.dumps(rows, default=str), tool_call_id=call["id"]))
+    convo.extend(tool_messages)
     final = llm_with_tools.invoke(convo)
     return ("recommend", final.content)
 
