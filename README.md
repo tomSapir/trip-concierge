@@ -14,8 +14,8 @@
 
 > **Status: end-to-end app working.** The data layer, all four agents, the `get_concierge_response`
 > entry point, and the Streamlit UI are built and wired, and the end-to-end evaluation is in place.
-> Few-shot prompt tuning is done (eval **97.1%**); remaining work is the Booking Advisor fine-tune
-> and deployment — see
+> Few-shot prompt tuning and the Booking Advisor fine-tune are done — the fine-tune is demonstrative
+> and kept off by default, so base + few-shot holds the eval at **97.1%**; remaining work is deployment — see
 > [`PLAN.md`](PLAN.md). Checklist below tracks progress.
 
 ---
@@ -160,7 +160,7 @@ trip-concierge/
 - [x] Streamlit chat UI
 - [x] Labeled eval dataset + accuracy / confusion matrix
 - [x] Few-shot prompt tuning
-- [ ] Supervised fine-tuning of the Booking Advisor
+- [x] Supervised fine-tuning of the Booking Advisor
 - [ ] Streamlit Community Cloud deployment
 
 ---

@@ -198,7 +198,12 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
    musing→continue, out-of-set→continue, vibe-only→suggest) and the Booking Advisor (book/dont_book,
    varied commitment phrasings). Re-eval **97.1%** (33/34), up from the 91.2% baseline — the `book`-recall
    weak spot recovered.
-7. **Fine-tune** — `finetune_booking_advisor.ipynb`; set `BOOKING_ADVISOR_MODEL`; re-eval.
+7. **Fine-tune** ← *done* — `finetune_booking_advisor.ipynb` builds a 35/9 `book`/`dont_book` set, runs the
+   SFT job on `gpt-4o-mini-2024-07-18`, and evaluates base vs fine-tune. Held-out binary: base = ft = 100%.
+   But activating it end-to-end **regressed 97.1% → 91.2%** — the live advisor classifies the *full
+   multi-turn* conversation, not the single-turn shape the fine-tune trained/tested on, and `gpt-4o-mini`
+   is weaker than the base `gpt-4.1`. **Kept OFF by default** (base + few-shot wins); SFT workflow
+   demonstrated, as intended.
 8. **Deploy** — Streamlit Community Cloud (entry `streamlit_app/streamlit_main.py`, secrets in TOML).
 9. **Polish + README sync** — error handling, README in lockstep (NO genai mention).
 
