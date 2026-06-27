@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 data/chroma_db/
 data/packages.db
+tests/finetune_data/
