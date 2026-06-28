@@ -41,35 +41,10 @@ def _typewriter(text):
         time.sleep(0.02)
 
 
-def _get_secret(name):
-    """Return a configured secret, or None when there's no secrets file (local/offline dev)."""
-    try:
-        return st.secrets[name]
-    except Exception:
-        return None
-
-
-def _check_password():
-    """Gate the public app behind APP_PASSWORD. No-op when the secret isn't set (local dev)."""
-    password = _get_secret("APP_PASSWORD")
-    if not password or st.session_state.get("authed"):
-        return
-    entered = st.text_input("Enter password to continue", type="password")
-    if not entered:
-        st.stop()  # waiting for input — nothing below renders yet
-    if entered == password:
-        st.session_state.authed = True
-        st.rerun()  # re-run so the password box is gone and the chat renders
-    st.error("Incorrect password.")
-    st.stop()
-
-
 def _user_msg_count():
     """How many messages in the current session were sent by the traveller."""
     return sum(1 for m in st.session_state.messages if m["role"] == "user")
 
-
-_check_password()  # gate first; everything below only runs once authed (or when no password is set)
 
 if "messages" not in st.session_state:
     _reset()

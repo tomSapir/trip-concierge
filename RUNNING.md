@@ -123,7 +123,6 @@ falls back to the base LLM if that model is unreachable.
 |---|---|---|
 | `OPENAI_API_KEY` | yes | chat, embeddings, fine-tuning |
 | `BOOKING_ADVISOR_MODEL` | no | fine-tuned Booking Advisor id; unset → base model |
-| `APP_PASSWORD` | no | password gate for a public deploy; unset → no gate (local dev) |
 
 For Streamlit Community Cloud deployment, set these keys as secrets (TOML) instead of a `.env`
 file — see [`DEPLOY.md`](DEPLOY.md) for the full guide.

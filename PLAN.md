@@ -204,7 +204,9 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
    multi-turn* conversation, not the single-turn shape the fine-tune trained/tested on, and `gpt-4o-mini`
    is weaker than the base `gpt-4.1`. **Kept OFF by default** (base + few-shot wins); SFT workflow
    demonstrated, as intended.
-8. **Deploy** — Streamlit Community Cloud (entry `streamlit_app/streamlit_main.py`, secrets in TOML).
+8. **Deploy** ← *done* — Streamlit Community Cloud (entry `streamlit_app/streamlit_main.py`, secrets in
+   TOML). Live; guarded by a dedicated spend-capped OpenAI key + a per-session message cap (an
+   `APP_PASSWORD` gate was added then removed by preference).
 9. **Polish + README sync** — error handling, README in lockstep (NO genai mention).
 
 ## Resolved this session (2026-06-22 grilling)
