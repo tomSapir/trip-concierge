@@ -12,11 +12,12 @@
 
 ---
 
-> **Status: end-to-end app working.** The data layer, all four agents, the `get_concierge_response`
-> entry point, and the Streamlit UI are built and wired, and the end-to-end evaluation is in place.
-> Few-shot prompt tuning and the Booking Advisor fine-tune are done — the fine-tune is demonstrative
-> and kept off by default, so base + few-shot holds the eval at **97.1%**; remaining work is deployment — see
-> [`PLAN.md`](PLAN.md). Checklist below tracks progress.
+> **Status: deployed.** The data layer, all four agents, the `get_concierge_response` entry point,
+> and the Streamlit UI are built and wired, and the end-to-end evaluation is in place. Few-shot
+> prompt tuning and the Booking Advisor fine-tune are done — the fine-tune is demonstrative and kept
+> off by default, so base + few-shot holds the eval at **97.1%** — and the app is deployed to
+> Streamlit Community Cloud. Remaining work is final polish — see [`PLAN.md`](PLAN.md) and
+> [`DEPLOY.md`](DEPLOY.md). Checklist below tracks progress.
 
 ---
 
@@ -153,10 +154,10 @@ reset.
 
 ## Deployment
 
-The app deploys to **Streamlit Community Cloud** straight from this repo (entry point
+The app is deployed to **Streamlit Community Cloud** straight from this repo (entry point
 `streamlit_app/streamlit_main.py`). Because a Community Cloud app is public and every turn spends
-OpenAI credits, the deploy uses a dedicated capped API key plus an in-app password gate
-(`APP_PASSWORD`) and per-session message cap. See [`DEPLOY.md`](DEPLOY.md) for the full guide.
+OpenAI credits, the deploy relies on a dedicated, spend-capped OpenAI key plus an in-app per-session
+message cap. See [`DEPLOY.md`](DEPLOY.md) for the full guide.
 
 ---
 
@@ -204,7 +205,7 @@ trip-concierge/
 - [x] Labeled eval dataset + accuracy / confusion matrix
 - [x] Few-shot prompt tuning
 - [x] Supervised fine-tuning of the Booking Advisor
-- [ ] Streamlit Community Cloud deployment
+- [x] Streamlit Community Cloud deployment
 
 ---
 

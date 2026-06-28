@@ -18,10 +18,9 @@ Layered defense — the first line is in your OpenAI account, not the code:
 |---|---|---|
 | **Dedicated key** | A separate OpenAI **project + API key** used *only* by this deploy, so you can revoke it without touching anything else. | OpenAI dashboard → Projects → new project → API key |
 | **Hard spend cap** | A **monthly budget / usage limit** on that project. This is the real backstop if the URL leaks. | OpenAI dashboard → Settings → Limits |
-| **Password gate** | The app asks for a shared passphrase before the chat opens (see §4). | `APP_PASSWORD` secret + app code |
-| **Per-session cap** | Each visitor's session locks after *N* messages, bounding the cost of any one tab. | app code |
+| **Per-session cap** | Each visitor's session locks after *N* messages, bounding the cost of any one tab. | app code (already in `streamlit_main.py`) |
 
-Set the dedicated key + spend cap now; the in-app guardrails (§4) go in before you make the URL public.
+The dedicated key + spend cap are the protection that matters — set them before you make the URL public.
 
 ---
 
@@ -67,7 +66,6 @@ rebuild from the committed PDFs + registry the first time a turn needs them.
 ```toml
 OPENAI_API_KEY = "sk-...restricted-key-from-§0..."
 # BOOKING_ADVISOR_MODEL = "ft:gpt-4o-mini-..."   # optional; leave commented to use the base model
-APP_PASSWORD = "choose-a-strong-passphrase"      # gates the public app (see §4)
 ```
 
 > Community Cloud also exposes every secret as an **environment variable**, so the app's existing
@@ -77,14 +75,13 @@ APP_PASSWORD = "choose-a-strong-passphrase"      # gates the public app (see §4
 
 ---
 
-## 4. In-app guardrails
+## 4. In-app guardrail
 
-Two small additions to `streamlit_main.py` (see the session notes for the skeleton):
+Already in `streamlit_main.py`:
 
-- **Password gate** — before the chat renders, require `APP_PASSWORD`. If the secret isn't set (local
-  dev, no `secrets.toml`), the gate is skipped so `streamlit run` still works offline.
-- **Per-session message cap** — count user turns in `st.session_state`; once the cap is hit, stop
-  accepting input (reuse the existing terminal-lock UI). Caps the spend of any single visitor.
+- **Per-session message cap** (`MAX_USER_MESSAGES`) — counts user turns in `st.session_state`; once the
+  cap is hit, input closes with a notice + reset, bounding the spend of any single visitor. Adjust the
+  constant to taste.
 
 ---
 
@@ -101,7 +98,7 @@ and the store rebuilds once more. Community Cloud's memory ceiling is ~1 GB, and
 ## 6. After it's live
 
 1. Open the app URL and run a happy path: **continue → recommend → book** (and try **abandon**).
-2. Confirm the password gate and message cap behave.
+2. Confirm the message cap behaves (input closes after the limit).
 3. Tick **Streamlit Community Cloud deployment** in [`README.md`](README.md) (To-Do List) and mark
    step 8 done in [`PLAN.md`](PLAN.md) — only once it's actually live.
 4. Keep the docs in sync (this file, README, RUNNING, PLAN).
