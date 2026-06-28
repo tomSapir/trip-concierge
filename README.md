@@ -151,6 +151,15 @@ reset.
 
 ---
 
+## Deployment
+
+The app deploys to **Streamlit Community Cloud** straight from this repo (entry point
+`streamlit_app/streamlit_main.py`). Because a Community Cloud app is public and every turn spends
+OpenAI credits, the deploy uses a dedicated capped API key plus an in-app password gate
+(`APP_PASSWORD`) and per-session message cap. See [`DEPLOY.md`](DEPLOY.md) for the full guide.
+
+---
+
 ## Project Structure
 
 ```text
