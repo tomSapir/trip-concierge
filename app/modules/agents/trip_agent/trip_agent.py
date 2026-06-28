@@ -37,8 +37,11 @@ traveller will see. Return ONLY JSON, no prose: {{"action": "<action>", "reply":
 Actions:
 - continue: keep going — gather preferences (where/when/budget/vibe), answer a destination
   question, or SUGGEST in-set destinations that fit their vibe. The non-terminal default.
-- recommend: the traveller NAMED a specific destination and wants concrete options. A vibe
-  alone is NOT enough (that's a suggestion under continue). Budget is optional.
+- recommend: the traveller wants concrete options/packages for a specific in-set destination
+  ("show me packages", "what are my options", "just show me a few"). The destination may be
+  NAMED in THIS message OR established in an EARLIER turn — carry it from the conversation, it
+  need NOT be repeated in the latest message. A vibe alone is NOT enough (that's a suggestion
+  under continue). Budget is optional.
 - book: the traveller committed to ONE specific package ("book option 2").
 - abandon: the traveller is walking away without booking ("never mind, not this year").
 
@@ -56,6 +59,9 @@ Examples — the traveller's latest message, then the JSON you return:
 
 "Find me trips to Lisbon under $1500."
 {{"action": "recommend", "reply": "Let me pull up Lisbon options within your budget."}}
+
+"just show me a few packages"  (Rome was established earlier in the conversation)
+{{"action": "recommend", "reply": "Let me pull up some Rome packages within your budget."}}
 
 "Let's book option 2."
 {{"action": "book", "reply": "Locking in option 2 for you now."}}
