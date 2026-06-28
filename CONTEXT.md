@@ -4,6 +4,10 @@ A multi-agent travel concierge: a chat assistant that learns a traveller's
 preferences, answers destination questions, proposes concrete trip packages
 within budget, and finalizes the one the traveller commits to.
 
+> The single-turn agent flow (classify → route → validate/enrich → demote) is diagrammed in
+> [`README.md`](README.md#architecture). That flowchart and this glossary are the canonical
+> description of the structure — keep both in sync with `app/main.py` when the flow changes.
+
 ## Language
 
 **Concierge**:
