@@ -51,6 +51,34 @@ fine-tuned sub-agent.
 
 ## Architecture
 
+<!--
+  SINGLE-TURN AGENT-FLOW DIAGRAM — SOURCE OF TRUTH: app/main.py (get_concierge_response routing)
+  plus each advisor's return contract (trip_agent.py, budget_advisor.py, booking_advisor.py,
+  destination_advisor.py). Whenever the routing, the set of actions, an advisor's role, or the
+  (action, reply) contract changes, update this Mermaid block IN THE SAME COMMIT.
+  See "Keeping this diagram current" at the end of this section.
+-->
+
+```mermaid
+flowchart TD
+    IN(["Conversation history — one turn"]) --> TA["<b>Trip Agent</b><br/>classifies the turn,<br/>drafts a reply"]
+    TA --> ROUTE{"action?"}
+
+    ROUTE -->|recommend| BUD["<b>Budget Advisor</b><br/>find_packages() function call,<br/>rewrites the reply from real rows"]
+    ROUTE -->|book| BOOK["<b>Booking Advisor</b><br/>binary book / dont_book"]
+    ROUTE -->|continue| DEST["<b>Destination Advisor</b><br/>RAG grounding / out-of-set scoping / passthrough"]
+    ROUTE -->|abandon| ABAN["<i>unguarded</i> — no advisor;<br/>draft passes straight through"]
+
+    BUD -->|"packages found, keep recommend"| RET
+    BUD -->|"no destination or no rows fit, demote to continue"| RET
+    BOOK -->|"genuine commitment, keep book"| RET
+    BOOK -->|"musing or question, demote to continue"| RET
+    DEST -->|continue| RET
+    ABAN -->|abandon| RET
+
+    RET(["returns <b>(action, reply)</b> to the UI<br/>book or abandon locks the chat"])
+```
+
 Every turn flows through this pipeline:
 
 1. **Trip Agent** reads the conversation history and proposes an action (`continue` / `recommend` /
@@ -67,6 +95,12 @@ Every turn flows through this pipeline:
    the action is demoted back to `continue`.
 
 See [`PLAN.md`](PLAN.md) for the full design and the build sequence.
+
+> **Keeping this diagram current** — the flowchart above is the canonical picture of one turn, and
+> it mirrors `app/main.py` (the routing) and each advisor's return contract. If you change the
+> routing, add or remove an action or advisor, or change what an advisor returns (including a
+> demotion), update the Mermaid block in the **same commit**. The terms used here (action,
+> recommend vs. suggest, demote, …) are defined in [`CONTEXT.md`](CONTEXT.md).
 
 ---
 
