@@ -80,11 +80,15 @@ precision/recall/F1, and the misclassifications.
 ### Option A — standalone script (re-runnable, no notebook)
 
 ```powershell
-python tests/run_evals.py
+python tests/run_evals.py                 # run, compare to tests/baseline_metrics.json
+python tests/run_evals.py --save          # also write this run's metrics (tests/last_run_metrics.json)
+python tests/run_evals.py --no-baseline   # skip the baseline comparison
 ```
 
 Run it from anywhere — the script anchors to the repo root itself (so `data/` paths resolve) and
-loads `.env` before importing the app.
+loads `.env` before importing the app. Each turn prints an `ok`/`MISS` marker, and a banner shows
+overall accuracy and `book` recall with their **delta vs the baseline** — so a tuning or fine-tuning
+run is an instant before/after read.
 
 ### Option B — notebook (same logic, step-through + plots)
 
