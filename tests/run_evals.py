@@ -93,7 +93,7 @@ def predict(cases, reference_date):
         case["pred"] = action
         marker = "ok  " if action == case["gold"] else "MISS"
         print(f'[{i:>2}/{len(cases)}] {marker} gold={case["gold"]:9} pred={action:9} '
-              f'| {case["scenario"][:45]}')
+              f'| {case["scenario"]}')
 
 
 def summarize(cases):
@@ -193,7 +193,9 @@ def report(cases, baseline):
     ]
     print(f"\n{len(misses)} misclassification(s):")
     if misses:
-        print(pd.DataFrame(misses).to_string(index=False))
+        # max_colwidth=None so the full last_user message prints — pandas otherwise clips
+        # cells at 50 chars with an ellipsis.
+        print(pd.DataFrame(misses).to_string(index=False, max_colwidth=None))
 
     return metrics
 
