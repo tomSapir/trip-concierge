@@ -28,6 +28,14 @@ Open questions:
   unambiguous commitment, so it bypasses the commit-vs-musing job the Booking Advisor was built for.)
 - Card affordances — Book only, or also "Tell me more" (→ Destination Advisor) and a compare view?
 
+**Resolved (2026-07-02 build-planning):** (a) **keep both paths** — cards are additive; free-text
+"book option 2" still flows through the unchanged, eval-covered pipeline. (b) **Deterministic bypass** —
+a "Book this" click is unambiguous commitment (the exact thing the Booking Advisor disambiguates in
+fuzzy *text*), so it skips that advisor and commits via one thin `book_package(pkg)` finalizer with the
+exact package — no LLM call, no "which option?" ambiguity. (c) **Book-only for v2.0** (plus the idea-4
+thumbnail); the three cards side-by-side already *are* the compare view, and "Tell me more" adds routing
+— defer it to v2.1.
+
 ### 2. Debug mode — the reasoning trail
 
 A sidebar toggle **🐞 Debug** that, when on, annotates each concierge turn with what the pipeline did.
@@ -47,6 +55,14 @@ Open questions:
 - Per-message expander vs one global debug panel?
 - Exactly which internals to surface (keep it readable, not a firehose)?
 
+**Resolved (2026-07-02 build-planning):** (a) **always-visible sidebar toggle** — the simplest option;
+this deliberately leaves the trail visible on the public deploy (transparency-as-feature, reversing the
+earlier "off on public" worry — trivially gated later with one `if`). (b) **Per-message expander** — the
+trace is inherently per-turn, so a collapsed `st.expander("🐞 trace")` under each assistant message beats
+a single global panel (which could only show the latest turn or a firehose). (c) Surface the fixed list —
+original→final action + demotion reason, route, retrieved chunks (as **source + one-line snippet**, not
+full text), and model.
+
 ### 3. Starter screen with clickable example prompts
 
 Before any conversation starts, show a welcome header + a row of clickable **starter chips** that
@@ -60,6 +76,12 @@ Open questions:
   never advertise an out-of-set city — same-set honesty for free)?
 - Starter-only, or also contextual mid-chat quick-replies? (Contextual replies overlap with idea 1's
   card buttons — likely keep this starter-only to avoid stepping on the cards.)
+
+**Resolved (2026-07-02 build-planning):** (a) **registry-derived chips** — seed them from
+`all_destinations()` (name + vibe tags) so a chip can *never* advertise an out-of-set city; the same-set
+invariant is structural, not curated. Any richer hand-written prompt ("Kyoto in April, ~$2k") stays
+allowed but guarded by a one-line test that every chip names only in-set cities. (b) **Starter-only** —
+no mid-chat contextual quick-replies (they overlap idea 1's card buttons).
 
 ### 4. Destination imagery — make it look like a travel app
 
@@ -76,6 +98,63 @@ Open questions:
   curating 6 photos. A live API adds a dependency, latency, and can surface a wrong/random image.)
 - How far to spread them — everywhere a destination appears, or just cards + confirmation?
 - Licensing — bundled photos must be free to redistribute (public-domain / CC0) for the public deploy.
+
+**Resolved (2026-07-02 build-planning):** (a) **bundled** static assets — honest, offline, no key, no
+wrong-image risk (the plan's own lean). (b) **Cards + confirmation only** for the first cut — both have an
+unambiguous destination from the structured rows; the `continue` hero-banner needs single-city
+name-detection in free text and is deferred. (c) **CC0 / public-domain** photos only, recorded in
+`data/destinations/img/CREDITS.md`.
+
+## Build sequence
+
+Ordered in the 2026-07-02 build-planning session (open questions above now resolved). Branch per step
+(`git checkout -b feat/v2-<step>`, never on main) and mark each `← done` as it fully completes, same
+discipline as [PLAN.md](PLAN.md). The **starter screen** goes first — it's independent and touches nothing
+in the pipeline. The **result-object seam** (step 2) is the shared foundation for cards, debug, and images,
+so it precedes all three.
+
+1. **Starter screen (idea 3)** — pure front-end, no pipeline change. In `streamlit_main.py`, when
+   `_user_msg_count() == 0`, render a welcome header + a row of `st.button` starter chips seeded from
+   `all_destinations()` (name + vibe), so a chip can never name an out-of-set city. A click appends the
+   chip's text as the first user message and reruns. Optional test: every chip names only in-set cities.
+
+2. **Result-object seam (foundation for ideas 1, 2, 4)** — widen the pipeline's return without breaking
+   evals.
+   - Add `ConciergeTurn(action, reply, packages=None, trace=None)` with `__iter__` yielding
+     `(action, reply)`, so `action, reply = get_concierge_response(...)` still works and `run_evals.py:90`
+     + `test_evals.ipynb` stay untouched. Only `streamlit_main.py` opts into `.packages` / `.trace`.
+   - Advisors return `(action, reply, meta)` (a small dict): Budget Advisor attaches `packages` (its
+     `all_rows`) on success and a `reason` on each demote branch; Booking Advisor a `reason` on
+     `dont_book`; Destination Advisor its retrieved `chunks` + case. `app/main.py` already holds the
+     **original** action (line 18) and sees the advisor's **final** action, so it assembles the `trace`
+     (original → final, route, demotion reason, chunks, model) and lifts `packages` onto the
+     `ConciergeTurn`. The `abandon` branch builds its trace in `main.py` (no advisor).
+   - Switch `streamlit_main.py` to `turn = get_concierge_response(...)` reading `.action` / `.reply`.
+   - **Verify:** `python tests/run_evals.py` — accuracy must be unchanged (the seam is behaviour-
+     preserving); judge by re-running, not one number (eval is nondeterministic).
+
+3. **Image data layer (idea 4, no render yet)** — add an `image` field to the `Destination` dataclass;
+   drop six CC0 / public-domain files at `data/destinations/img/<name>.jpg` + a `CREDITS.md`; add an
+   `image_for(name)` helper with a graceful missing-file fallback. Confirm the images aren't caught by a
+   `data/` gitignore (the guide PDFs under `data/destinations/` are tracked, so the dir is fine).
+
+4. **Package cards + rich confirmation (ideas 1 + 4 render)** — all in `streamlit_main.py`.
+   - On a turn carrying `turn.packages`, store `st.session_state.offer` and render `st.columns(n)` cards
+     **every rerun** (thumbnail via `image_for`, destination, dates, nights, hotel, total). Persisting in
+     session_state is mandatory — Streamlit reruns wipe any in-the-moment widget, and the buttons must be
+     re-emitted to stay clickable. Retire the offer once the next turn isn't a fresh `recommend`.
+   - "Book this" → `book_package(pkg)` finalizer: deterministic, no LLM — lock to `book`, stash the booked
+     package, clear the offer. One finalizer = single commit path.
+   - Rich confirmation: full-width `image_for(dest)` + real details ("Bali — depart Sep 3, 7 nights,
+     $1,420 🎉"), replacing the generic success box, when a package was booked via a card.
+   - Free-text "book option 2" still routes through the Booking Advisor (eval-covered) but has no specific
+     package object, so it keeps the generic confirmation for now — asymmetry noted; a later step could
+     resolve the option index to a row.
+
+5. **Debug trail (idea 2)** — `streamlit_main.py`. Always-visible sidebar `st.toggle("🐞 Debug")`. Store
+   each turn's `trace` on its stored message dict (extend `{"role", "content"}` → `+ "trace"`), and when
+   the toggle is on render a collapsed `st.expander("🐞 trace")` under each assistant message: original →
+   final action (+ demotion reason), route, retrieved chunks (source + one-line snippet), and model.
 
 ## Notes for the build session
 
