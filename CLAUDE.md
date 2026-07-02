@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+Before you do any work, mention how you could verify that work.
+
 ## Project
 
 Trip Concierge — a multi-agent travel chatbot (Streamlit UI) that plans a trip: it gathers preferences,
