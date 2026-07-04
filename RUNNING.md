@@ -149,6 +149,7 @@ tests/
   trip_conversations.json          labeled eval set (14 conversations / 34 turns)
   run_evals.py                      standalone eval runner  (section 4A)
   test_evals.ipynb                 eval notebook            (section 4B)
+  test_starters.py                 starter-chip same-set invariant guard (`python tests/test_starters.py`)
   finetune_booking_advisor.ipynb   SFT workflow             (section 5)
   baseline_metrics.json            saved baseline to compare against
 ```

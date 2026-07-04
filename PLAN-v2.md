@@ -113,10 +113,16 @@ discipline as [PLAN.md](PLAN.md). The **starter screen** goes first — it's ind
 in the pipeline. The **result-object seam** (step 2) is the shared foundation for cards, debug, and images,
 so it precedes all three.
 
-1. **Starter screen (idea 3)** — pure front-end, no pipeline change. In `streamlit_main.py`, when
+1. **Starter screen (idea 3)** — *done* — pure front-end, no pipeline change. In `streamlit_main.py`, when
    `_user_msg_count() == 0`, render a welcome header + a row of `st.button` starter chips seeded from
    `all_destinations()` (name + vibe), so a chip can never name an out-of-set city. A click appends the
    chip's text as the first user message and reruns. Optional test: every chip names only in-set cities.
+   Built as `streamlit_app/starters.py` (`starter_prompts()` → one `Starter` per registry destination,
+   Streamlit-free so it's importable/testable); the UI stages a click via `st.session_state.pending_prompt`
+   and reruns, so both a chip and typed text flow through the one unchanged turn-processing block. Invariant
+   guarded by `tests/test_starters.py` (`python tests/test_starters.py`, passing). Verified end-to-end in
+   the running app: chips render on a fresh session, a click ("Bali") drives a real `continue` turn, and the
+   chips retire once a message exists.
 
 2. **Result-object seam (foundation for ideas 1, 2, 4)** — widen the pipeline's return without breaking
    evals.

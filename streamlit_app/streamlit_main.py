@@ -18,6 +18,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 load_dotenv()
 
 from app.main import get_concierge_response  # noqa: E402 — must follow load_dotenv() above
+from starters import starter_prompts  # noqa: E402 — needs the project root on sys.path (above)
 
 TERMINAL = {"book", "abandon"}
 GREETING = "Hi! I'm your trip concierge ✈️ Where in the world are you dreaming of going?"
@@ -46,6 +47,19 @@ def _user_msg_count():
     return sum(1 for m in st.session_state.messages if m["role"] == "user")
 
 
+def _starter_chips():
+    """On a fresh conversation, offer clickable openers seeded from the registry so a chip
+    can never name an out-of-set city. A click stages its prompt as the first user turn."""
+    st.markdown("**New here? Pick a starting point — or just type below.**")
+    starters = starter_prompts()
+    for start in range(0, len(starters), 3):  # three chips per row
+        row = starters[start:start + 3]
+        for col, starter in zip(st.columns(len(row)), row):
+            if col.button(starter.label, width="stretch", key=f"starter_{starter.destination}"):
+                st.session_state.pending_prompt = starter.prompt
+                st.rerun()
+
+
 if "messages" not in st.session_state:
     _reset()
 
@@ -71,23 +85,32 @@ elif _user_msg_count() >= MAX_USER_MESSAGES:
         _reset()
         st.rerun()
 
-elif prompt := st.chat_input("Type your message…"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+else:
+    # A fresh conversation shows clickable starters; skip them while a click is mid-flight.
+    if _user_msg_count() == 0 and "pending_prompt" not in st.session_state:
+        _starter_chips()
 
-    with st.chat_message("assistant"):
-        try:
-            with st.spinner("Thinking…"):
-                action, reply = get_concierge_response(st.session_state.messages)
-            st.write_stream(_typewriter(reply))
-        except Exception as e:
-            st.error(f"Something went wrong: {e}")
-            st.stop()  # leave the turn un-recorded so the user can retry
+    # The turn's prompt is a staged starter click or freshly typed text. Call chat_input
+    # unconditionally so the box stays visible even on a starter-driven turn.
+    typed = st.chat_input("Type your message…")
+    prompt = st.session_state.pop("pending_prompt", None) or typed
+    if prompt:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-    st.session_state.messages.append({"role": "assistant", "content": reply})
+        with st.chat_message("assistant"):
+            try:
+                with st.spinner("Thinking…"):
+                    action, reply = get_concierge_response(st.session_state.messages)
+                st.write_stream(_typewriter(reply))
+            except Exception as e:
+                st.error(f"Something went wrong: {e}")
+                st.stop()  # leave the turn un-recorded so the user can retry
 
-    # A terminal action locks the chat; rerun so the input is replaced by the reset button.
-    if action in TERMINAL:
-        st.session_state.locked = action
-        st.rerun()
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+
+        # A terminal action locks the chat; rerun so the input is replaced by the reset button.
+        if action in TERMINAL:
+            st.session_state.locked = action
+            st.rerun()
