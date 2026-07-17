@@ -24,12 +24,17 @@ def get_concierge_response(messages, reference_date=None):
     # they differ exactly when the advisor demoted, which is what the trace makes visible.
     if action == "recommend":
         # No draft — the Budget Advisor rewrites from real rows; vetoes to continue if no destination.
-        final_action, reply = get_budget_advisor_response(messages, reference_date)
-        return ConciergeTurn(final_action, reply, trace={
-            "original_action": action,
-            "final_action": final_action,
-            "route": "budget_advisor",
-        })
+        final_action, reply, meta = get_budget_advisor_response(messages, reference_date)
+        trace = {"original_action": action,
+                 "final_action": final_action,
+                 "route": "budget_advisor"}
+        # Lift only the keys this outcome produced: demotes carry "reason", success
+        # carries "model" + "packages" (absent -> .get gives the dataclass default None).
+        if "reason" in meta:
+            trace["reason"] = meta["reason"]
+        if "model" in meta:
+            trace["model"] = meta["model"]
+        return ConciergeTurn(final_action, reply, packages=meta.get("packages"), trace=trace)
 
     if action == "book":
         # Demotes to continue when the traveller is musing rather than committing.

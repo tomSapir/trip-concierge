@@ -35,7 +35,7 @@ fields.
   `main.py:18`) and the advisor's final action; put `{original_action, final_action, route}` into
   `trace`. No advisor change (route is known from the branch taken; `abandon` builds its trace inline).
   *Verify:* eval unchanged; print one `turn.trace`.
-- [ ] **2d — Budget Advisor `meta`.** Return `(action, reply, meta)`: `{"packages": all_rows, "model":
+- [x] **2d — Budget Advisor `meta`.** Return `(action, reply, meta)`: `{"packages": all_rows, "model":
   "gpt-4.1"}` on success; `{"reason": …}` on the veto and no-fit demotes. `main.py` lifts `packages` onto
   the turn and `reason` into the trace. *Verify:* eval unchanged; canned `recommend` turn → `turn.packages`
   non-empty.

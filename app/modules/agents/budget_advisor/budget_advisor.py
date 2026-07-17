@@ -66,7 +66,8 @@ def get_budget_advisor_response(messages, reference_date=None):
     # The model replied with plain text instead; we discard it for a fixed nudge -> `continue`.
     if not ai.tool_calls:
         return ("continue", "Which destination are you considering? Once we settle on a "
-                            "place, I can pull up concrete trip options.")
+                            "place, I can pull up concrete trip options.",
+                {"reason": "veto: model made no tool call, so no destination was named"})
 
     # The model may make MORE THAN ONE find_packages call (e.g. when the traveller asks to
     # compare options). OpenAI requires every tool_call_id to get its own tool message, so we
@@ -80,14 +81,17 @@ def get_budget_advisor_response(messages, reference_date=None):
 
     # Nothing fits any call (out-of-set city, or budget too low) -> honest nudge, demote to `continue`.
     if not all_rows:
-        return ("continue", _no_fit_nudge(ai.tool_calls[0]["args"]))
+        return ("continue", _no_fit_nudge(ai.tool_calls[0]["args"]),
+                {"reason": f"no packages fit {ai.tool_calls[0]['args']}"})
 
     # Round 2: feed the model its tool-call message plus every tool response so it writes the
     # list from grounded data.
     convo.append(ai)
     convo.extend(tool_messages)
     final = llm_with_tools.invoke(convo)
-    return ("recommend", final.content)
+    # meta carries the real rows (the UI's package cards render these, never the prose)
+    # and llm.model_name over a hardcoded string so the trace stays honest if the model changes.
+    return ("recommend", final.content, {"packages": all_rows, "model": llm.model_name})
 
 
 def _no_fit_nudge(args):
