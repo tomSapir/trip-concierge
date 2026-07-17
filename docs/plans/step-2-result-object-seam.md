@@ -31,7 +31,7 @@ fields.
 - [x] **2b — `main.py` returns `ConciergeTurn`, no advisor change.** Unpack each advisor's existing
   `(action, reply)` and wrap: `return ConciergeTurn(action, reply)`. Proves `__iter__` works through the
   real pipeline before touching advisors. *Verify:* `python tests/run_evals.py` — accuracy unchanged.
-- [ ] **2c — assemble the trace `main.py` can build alone.** Capture the original action (already at
+- [x] **2c — assemble the trace `main.py` can build alone.** Capture the original action (already at
   `main.py:18`) and the advisor's final action; put `{original_action, final_action, route}` into
   `trace`. No advisor change (route is known from the branch taken; `abandon` builds its trace inline).
   *Verify:* eval unchanged; print one `turn.trace`.

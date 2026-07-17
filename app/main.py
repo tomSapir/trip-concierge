@@ -20,20 +20,38 @@ def get_concierge_response(messages, reference_date=None):
     action, draft = get_trip_agent_response(messages, reference_date)
 
     # Route on the action; each advisor returns its own (action, reply) and may demote.
+    # `action` is the Trip Agent's original pick, `final_action` the advisor's verdict —
+    # they differ exactly when the advisor demoted, which is what the trace makes visible.
     if action == "recommend":
         # No draft — the Budget Advisor rewrites from real rows; vetoes to continue if no destination.
-        action, reply = get_budget_advisor_response(messages, reference_date)
-        return ConciergeTurn(action, reply)
+        final_action, reply = get_budget_advisor_response(messages, reference_date)
+        return ConciergeTurn(final_action, reply, trace={
+            "original_action": action,
+            "final_action": final_action,
+            "route": "budget_advisor",
+        })
 
     if action == "book":
         # Demotes to continue when the traveller is musing rather than committing.
-        action, reply = get_booking_advisor_response(messages, draft)
-        return ConciergeTurn(action, reply)
+        final_action, reply = get_booking_advisor_response(messages, draft)
+        return ConciergeTurn(final_action, reply, trace={
+            "original_action": action,
+            "final_action": final_action,
+            "route": "booking_advisor",
+        })
 
     if action == "abandon":
-        # Unguarded terminal — no advisor; pass the agent's draft straight through.
-        return ConciergeTurn(action, draft)
+        # Unguarded terminal — no advisor ran, so original == final and route is None.
+        return ConciergeTurn(action, draft, trace={
+            "original_action": action,
+            "final_action": action,
+            "route": None,
+        })
 
     # continue (the default): grounds a factual question, scopes an out-of-set one, or keeps the draft.
-    action, reply = get_destination_advisor_response(messages, draft)
-    return ConciergeTurn(action, reply)
+    final_action, reply = get_destination_advisor_response(messages, draft)
+    return ConciergeTurn(final_action, reply, trace={
+        "original_action": action,
+        "final_action": final_action,
+        "route": "destination_advisor",
+    })
