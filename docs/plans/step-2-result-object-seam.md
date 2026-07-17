@@ -28,7 +28,7 @@ fields.
 - [x] **2a — `ConciergeTurn` type + static test.** New `app/concierge_turn.py` (frozen dataclass, no agent
   imports so it imports without an API key). `__iter__` yields exactly `action, reply`. New
   `tests/test_concierge_turn.py` (standalone, no OpenAI). *Verify:* `python tests/test_concierge_turn.py`.
-- [ ] **2b — `main.py` returns `ConciergeTurn`, no advisor change.** Unpack each advisor's existing
+- [x] **2b — `main.py` returns `ConciergeTurn`, no advisor change.** Unpack each advisor's existing
   `(action, reply)` and wrap: `return ConciergeTurn(action, reply)`. Proves `__iter__` works through the
   real pipeline before touching advisors. *Verify:* `python tests/run_evals.py` — accuracy unchanged.
 - [ ] **2c — assemble the trace `main.py` can build alone.** Capture the original action (already at
