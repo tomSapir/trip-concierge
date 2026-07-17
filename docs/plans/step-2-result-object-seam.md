@@ -39,7 +39,7 @@ fields.
   "gpt-4.1"}` on success; `{"reason": …}` on the veto and no-fit demotes. `main.py` lifts `packages` onto
   the turn and `reason` into the trace. *Verify:* eval unchanged; canned `recommend` turn → `turn.packages`
   non-empty.
-- [ ] **2e — Destination Advisor `meta`.** Return `{"chunks": docs, "model": "gpt-4.1"}`. `main.py`
+- [x] **2e — Destination Advisor `meta`.** Return `{"chunks": docs, "model": "gpt-4.1"}`. `main.py`
   reduces chunks to `{source, snippet}` in the trace (raw `Document`s never reach session_state).
   *Verify:* eval unchanged.
 - [ ] **2f — Booking Advisor `meta`.** Return `{"reason": …, "model": <base or ft>}` on demote,

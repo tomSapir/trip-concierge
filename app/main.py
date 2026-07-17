@@ -54,9 +54,14 @@ def get_concierge_response(messages, reference_date=None):
         })
 
     # continue (the default): grounds a factual question, scopes an out-of-set one, or keeps the draft.
-    final_action, reply = get_destination_advisor_response(messages, draft)
-    return ConciergeTurn(final_action, reply, trace={
-        "original_action": action,
-        "final_action": final_action,
-        "route": "destination_advisor",
-    })
+    final_action, reply, meta = get_destination_advisor_response(messages, draft)
+    trace = {"original_action": action,
+             "final_action": final_action,
+             "route": "destination_advisor",
+             "model": meta["model"]}
+    # Reduce retrieved chunks at the seam: raw LangChain Documents must not reach
+    # session_state — the trace keeps only what the debug trail displays.
+    trace["chunks"] = [{"source": d.metadata.get("source"),
+                        "snippet": d.page_content[:200]}
+                       for d in meta["chunks"]]
+    return ConciergeTurn(final_action, reply, trace=trace)
