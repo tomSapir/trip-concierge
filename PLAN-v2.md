@@ -125,7 +125,7 @@ so it precedes all three.
    chips retire once a message exists.
 
 2. **Result-object seam (foundation for ideas 1, 2, 4)** — widen the pipeline's return without breaking
-   evals.
+   evals. Sub-step working plan: [`docs/plans/step-2-result-object-seam.md`](docs/plans/step-2-result-object-seam.md).
    - Add `ConciergeTurn(action, reply, packages=None, trace=None)` with `__iter__` yielding
      `(action, reply)`, so `action, reply = get_concierge_response(...)` still works and `run_evals.py:90`
      + `test_evals.ipynb` stay untouched. Only `streamlit_main.py` opts into `.packages` / `.trace`.
