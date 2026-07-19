@@ -56,7 +56,7 @@ fine-tuned sub-agent.
   SINGLE-TURN AGENT-FLOW DIAGRAM — SOURCE OF TRUTH: app/main.py (get_concierge_response routing)
   plus each advisor's return contract (trip_agent.py, budget_advisor.py, booking_advisor.py,
   destination_advisor.py). Whenever the routing, the set of actions, an advisor's role, or the
-  (action, reply) contract changes, update this Mermaid block IN THE SAME COMMIT.
+  ConciergeTurn contract changes, update this Mermaid block IN THE SAME COMMIT.
   See "Keeping this diagram current" at the end of this section.
 -->
 
@@ -77,7 +77,7 @@ flowchart TD
     DEST -->|continue| RET
     ABAN -->|abandon| RET
 
-    RET(["returns <b>(action, reply)</b> to the UI<br/>book or abandon locks the chat"])
+    RET(["returns a <b>ConciergeTurn</b> to the UI — action + reply,<br/>plus packages and a trace (original→final action,<br/>route, demotion reason, chunks, model)<br/>book or abandon locks the chat"])
 ```
 
 Every turn flows through this pipeline:
@@ -94,6 +94,10 @@ Every turn flows through this pipeline:
      is the separate, unguarded `abandon` action.)
 3. If an Advisor disagrees with the Trip Agent (e.g. the Budget Advisor says *too early to recommend*),
    the action is demoted back to `continue`.
+4. The result is wrapped in a `ConciergeTurn`: the final action and reply, plus the found `packages`
+   (on a successful `recommend`) and a `trace` of what the pipeline did (original → final action, route,
+   demotion reason, retrieved chunks, model). It unpacks to `(action, reply)`, so tuple callers — the
+   eval harness — keep working unchanged.
 
 See [`PLAN.md`](PLAN.md) for the full design and the build sequence.
 

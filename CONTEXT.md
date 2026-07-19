@@ -84,6 +84,19 @@ Specialist that guards **Book**. Confirms the traveller has genuinely committed 
 a specific **Package** rather than merely musing ("option 2 looks tempting…"). If
 not a real commitment, it demotes the turn back to **Continue**.
 
+**ConciergeTurn**:
+The result object one pipeline turn returns to the UI (the v2 seam). Carries the
+final **Action** and the reply, plus optional `packages` (the Budget Advisor's real
+rows on a successful **Recommend**) and a **Trace**. It unpacks to `(action, reply)`,
+so tuple callers — the eval harness — are unaffected: the v1 contract is *widened,
+not broken*.
+
+**Trace**:
+The per-turn reasoning trail inside a **ConciergeTurn**: the Trip Agent's original
+**Action** versus the advisor's final one, which advisor ran (the route), why a
+demotion happened, the retrieved guide chunks, and the model that answered. Powers
+the v2 debug trail; nothing in the pipeline reads it back.
+
 ## Flagged ambiguities
 
 _(none open)_
