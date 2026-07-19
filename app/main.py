@@ -3,8 +3,9 @@
 The Trip Agent picks the action and drafts a reply; the matching Advisor then validates or
 enriches that draft and may DEMOTE the action (e.g. Budget Advisor vetoing a destination-less
 `recommend` back to `continue`). `abandon` is unguarded — it fires straight from here with the
-agent's draft. Each advisor still returns (action, reply); this seam wraps it in a
-ConciergeTurn, which unpacks back to (action, reply) for existing callers (v2 step 2b).
+agent's draft. Each advisor returns (action, reply, meta); this seam folds meta into the
+trace, lifts packages onto the turn, and wraps it all in a ConciergeTurn, which still
+unpacks back to (action, reply) for existing callers.
 """
 from app.concierge_turn import ConciergeTurn
 from app.modules.agents import (
@@ -38,12 +39,17 @@ def get_concierge_response(messages, reference_date=None):
 
     if action == "book":
         # Demotes to continue when the traveller is musing rather than committing.
-        final_action, reply = get_booking_advisor_response(messages, draft)
-        return ConciergeTurn(final_action, reply, trace={
+        final_action, reply, meta = get_booking_advisor_response(messages, draft)
+        trace = {
             "original_action": action,
             "final_action": final_action,
             "route": "booking_advisor",
-        })
+        }
+        if "reason" in meta:
+            trace["reason"] = meta["reason"]
+        if "model" in meta:
+            trace["model"] = meta["model"]
+        return ConciergeTurn(final_action, reply, trace=trace)
 
     if action == "abandon":
         # Unguarded terminal — no advisor ran, so original == final and route is None.

@@ -48,26 +48,32 @@ Examples — the traveller's latest message, then your answer:
 
 
 def _classify(convo):
-    """Return 'book' or 'dont_book'. Try the configured model; fall back to base on any error."""
+    """Return ('book' or 'dont_book', model_used) — the caller unpacks both.
+    Try the configured model; fall back to base on any error."""
     try:
         # Use the fine-tuned model when BOOKING_ADVISOR_MODEL is set, else the base model.
         llm = ChatOpenAI(model=BOOKING_ADVISOR_MODEL, temperature=0) if BOOKING_ADVISOR_MODEL else base_llm
         raw = llm.invoke(convo).content
+        model_used = BOOKING_ADVISOR_MODEL or BASE_MODEL
     except Exception:
         # Stale / unreachable ft id must never break booking -> fall back to base.
         raw = base_llm.invoke(convo).content
+        model_used = BASE_MODEL
+
     label = raw.strip().strip(".").lower()
-    return "book" if label == "book" else "dont_book"
+    return ("book" if label == "book" else "dont_book", model_used)
 
 
 def get_booking_advisor_response(messages, draft):
     # draft = the Trip Agent's drafted reply for this turn; we keep it on both branches below.
     convo = [("system", SYSTEM)] + [(ROLE_MAP.get(m["role"], "human"), m["content"]) for m in messages]
-    label = _classify(convo)
+    label, model_used = _classify(convo)
 
     # Genuine commitment -> keep the terminal `book`; the UI surfaces the confirmation message.
     if label == "book":
-        return ("book", draft)
+        return ("book", draft, {"model": model_used})
 
     # Musing / question / hesitation -> demote and keep the agent's draft so the chat continues.
-    return ("continue", draft)
+    return ("continue", draft,
+            {"reason": "classifier said dont_book — musing, not a commitment",
+             "model": model_used})

@@ -42,7 +42,7 @@ fields.
 - [x] **2e — Destination Advisor `meta`.** Return `{"chunks": docs, "model": "gpt-4.1"}`. `main.py`
   reduces chunks to `{source, snippet}` in the trace (raw `Document`s never reach session_state).
   *Verify:* eval unchanged.
-- [ ] **2f — Booking Advisor `meta`.** Return `{"reason": …, "model": <base or ft>}` on demote,
+- [x] **2f — Booking Advisor `meta`.** Return `{"reason": …, "model": <base or ft>}` on demote,
   `{"model": …}` on `book`. Unify `model` into the trace across all routes. *Verify:* eval unchanged.
 - [ ] **2g — `streamlit_main.py` opts in.** Switch `action, reply = …` → `turn = …; turn.action /
   turn.reply`. Still **no** rendering of packages/trace (those are steps 4 and 5). *Verify:* run the app,
