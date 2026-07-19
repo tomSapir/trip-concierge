@@ -50,7 +50,11 @@ Remove-Item data/packages.db, data/chroma_db -Recurse -Force   # then rerun the 
 ## Architecture
 
 One turn = one call to `get_concierge_response(messages, reference_date=None)` in `app/main.py`, returning
-`(action, reply)`. Understanding the flow means reading `app/main.py` plus all four agents:
+a `ConciergeTurn` (`app/concierge_turn.py`) — final action + reply, plus optional `packages` (real rows on a
+successful `recommend`) and a `trace` (original → final action, route, demotion reason, retrieved chunks,
+model). It unpacks to `(action, reply)`, so tuple callers like the eval harness are unaffected — the v2 seam
+widened the contract without breaking it. Understanding the flow means reading `app/main.py` plus all four
+agents:
 
 1. **Trip Agent** (`app/modules/agents/trip_agent/trip_agent.py`) — a JSON few-shot classifier. It reads
    the whole conversation, picks exactly one **action**, and drafts the reply: `continue` / `recommend` /
@@ -103,7 +107,7 @@ factual turn is slow because it embeds the guides.
   embeddings clients at import time, so entry points call `load_dotenv()` *before* `from app.main import …`
   — preserve that order. On Community Cloud the key comes from Secrets (exposed as env vars).
 - **Keep the turn diagram and glossary in sync in the SAME commit.** If you change the routing, the set of
-  actions, an advisor's role, or the `(action, reply)` contract, update the Mermaid flowchart in
+  actions, an advisor's role, or the `ConciergeTurn` contract, update the Mermaid flowchart in
   `README.md` (§Architecture) and the terms in `CONTEXT.md`. Both are declared canonical.
 - **The public README must not reference the project's internal lineage / prior project.** That history
   stays in internal working docs (`PLAN.md`).

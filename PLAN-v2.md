@@ -124,8 +124,11 @@ so it precedes all three.
    the running app: chips render on a fresh session, a click ("Bali") drives a real `continue` turn, and the
    chips retire once a message exists.
 
-2. **Result-object seam (foundation for ideas 1, 2, 4)** — widen the pipeline's return without breaking
-   evals.
+2. **Result-object seam (foundation for ideas 1, 2, 4)** — *done* — widen the pipeline's return without
+   breaking evals. Sub-step working plan: [`docs/plans/step-2-result-object-seam.md`](docs/plans/step-2-result-object-seam.md).
+   Landed as 2a–2h, one commit each on `feat/v2-result-object-seam`: `ConciergeTurn` + per-advisor
+   `(action, reply, meta)`, trace assembled in `main.py`, `streamlit_main.py` reading `turn.*`. Eval held
+   at the 91.2% baseline (Δ +0.0 after the last pipeline touch); UI verified live (one chip-driven turn).
    - Add `ConciergeTurn(action, reply, packages=None, trace=None)` with `__iter__` yielding
      `(action, reply)`, so `action, reply = get_concierge_response(...)` still works and `run_evals.py:90`
      + `test_evals.ipynb` stay untouched. Only `streamlit_main.py` opts into `.packages` / `.trace`.

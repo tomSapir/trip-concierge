@@ -134,7 +134,9 @@ file — see [`DEPLOY.md`](DEPLOY.md) for the full guide.
 ```text
 streamlit_app/streamlit_main.py     UI → calls get_concierge_response per turn
 app/main.py                         get_concierge_response(messages, reference_date=None)
-                                      → (action, reply); routes to one advisor, which may demote
+                                      → ConciergeTurn (unpacks to (action, reply)); routes to
+                                      one advisor, which may demote
+app/concierge_turn.py               the ConciergeTurn result type (action, reply, packages, trace)
 app/modules/destination_registry.py canonical destination list (single source of truth)
 app/modules/agents/
   trip_agent/trip_agent.py          classifies the turn: continue / recommend / book / abandon
@@ -159,10 +161,15 @@ Calling the pipeline directly from Python:
 ```python
 from app.main import get_concierge_response
 
-action, reply = get_concierge_response(
+turn = get_concierge_response(
     [{"role": "user", "content": "I want a relaxed beach trip in September"}]
 )
-# action ∈ {"continue", "recommend", "book", "abandon"}
+turn.action    # ∈ {"continue", "recommend", "book", "abandon"}
+turn.reply     # the concierge's answer
+turn.packages  # real package rows on a successful recommend, else None
+turn.trace     # {original_action, final_action, route, reason?, model?, chunks?}
+
+action, reply = get_concierge_response(...)  # back-compat: unpacks like the old pair
 ```
 
 ---

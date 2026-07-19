@@ -53,7 +53,7 @@ def get_destination_advisor_response(messages, draft):
     )
 
     # 4. One LLM call. The Destination Advisor never changes the action — it only ever
-    #    runs inside `continue` — so it always returns ("continue", reply). The tuple
-    #    shape matches the other advisors, which CAN demote the action (e.g. veto).
+    #    runs inside `continue` — so it always returns ("continue", reply, meta). meta
+    #    hands the raw retrieved Documents to the seam, which trims them for the trace.
     reply = llm.invoke([("system", system), ("human", human)]).content
-    return ("continue", reply)
+    return ("continue", reply, {"chunks": docs, "model": llm.model_name})
