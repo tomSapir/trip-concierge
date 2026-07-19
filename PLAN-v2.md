@@ -147,7 +147,10 @@ so it precedes all three.
    `image_for(name)` helper with a graceful missing-file fallback. Confirm the images aren't caught by a
    `data/` gitignore (the guide PDFs under `data/destinations/` are tracked, so the dir is fine).
 
-4. **Package cards + rich confirmation (ideas 1 + 4 render)** — all in `streamlit_main.py`.
+4. **Package cards + rich confirmation (ideas 1 + 4 render)** — *done* — all in `streamlit_main.py`.
+   Verified live: recommend turn → cards (thumbnail, dates, nights, hotel, total) under the chat;
+   "Book this" → deterministic lock + full-width confirmation with the booked package's real details;
+   reset clears offer/booked. Offer rows deduped by package_id; free-text booking still works alongside.
    - On a turn carrying `turn.packages`, store `st.session_state.offer` and render `st.columns(n)` cards
      **every rerun** (thumbnail via `image_for`, destination, dates, nights, hotel, total). Persisting in
      session_state is mandatory — Streamlit reruns wipe any in-the-moment widget, and the buttons must be
