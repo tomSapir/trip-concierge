@@ -44,7 +44,7 @@ fields.
   *Verify:* eval unchanged.
 - [x] **2f — Booking Advisor `meta`.** Return `{"reason": …, "model": <base or ft>}` on demote,
   `{"model": …}` on `book`. Unify `model` into the trace across all routes. *Verify:* eval unchanged.
-- [ ] **2g — `streamlit_main.py` opts in.** Switch `action, reply = …` → `turn = …; turn.action /
+- [x] **2g — `streamlit_main.py` opts in.** Switch `action, reply = …` → `turn = …; turn.action /
   turn.reply`. Still **no** rendering of packages/trace (those are steps 4 and 5). *Verify:* run the app,
   one turn end-to-end.
 - [ ] **2h — doc sync + mark done.** README Mermaid diagram + CONTEXT.md (the `(action, reply)` contract is

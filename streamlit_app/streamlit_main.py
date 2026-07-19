@@ -2,8 +2,9 @@
 
     streamlit run streamlit_app/streamlit_main.py
 
-One turn per user message: the message list goes to get_concierge_response, which returns
-(action, reply). A terminal action (book / abandon) locks the chat and offers a reset.
+One turn per user message: the message list goes to get_concierge_response, which returns a
+ConciergeTurn — action, reply, and optional packages/trace for the later UI steps. A terminal
+action (book / abandon) locks the chat and offers a reset.
 """
 import sys
 import pathlib
@@ -102,15 +103,16 @@ else:
         with st.chat_message("assistant"):
             try:
                 with st.spinner("Thinking…"):
-                    action, reply = get_concierge_response(st.session_state.messages)
-                st.write_stream(_typewriter(reply))
+                    # Hold the whole ConciergeTurn — steps 4/5 will read .packages / .trace off it.
+                    turn = get_concierge_response(st.session_state.messages)
+                st.write_stream(_typewriter(turn.reply))
             except Exception as e:
                 st.error(f"Something went wrong: {e}")
                 st.stop()  # leave the turn un-recorded so the user can retry
 
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.session_state.messages.append({"role": "assistant", "content": turn.reply})
 
         # A terminal action locks the chat; rerun so the input is replaced by the reset button.
-        if action in TERMINAL:
-            st.session_state.locked = action
+        if turn.action in TERMINAL:
+            st.session_state.locked = turn.action
             st.rerun()
