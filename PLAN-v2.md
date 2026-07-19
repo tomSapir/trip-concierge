@@ -142,7 +142,7 @@ so it precedes all three.
    - **Verify:** `python tests/run_evals.py` — accuracy must be unchanged (the seam is behaviour-
      preserving); judge by re-running, not one number (eval is nondeterministic).
 
-3. **Image data layer (idea 4, no render yet)** — add an `image` field to the `Destination` dataclass;
+3. **Image data layer (idea 4, no render yet)** — *done* — add an `image` field to the `Destination` dataclass;
    drop six CC0 / public-domain files at `data/destinations/img/<name>.jpg` + a `CREDITS.md`; add an
    `image_for(name)` helper with a graceful missing-file fallback. Confirm the images aren't caught by a
    `data/` gitignore (the guide PDFs under `data/destinations/` are tracked, so the dir is fine).
