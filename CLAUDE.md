@@ -71,9 +71,13 @@ agents:
    - `book` → **Booking Advisor** (`booking_advisor/booking_advisor.py`): binary `book`/`dont_book` —
      confirms genuine commitment vs musing; demotes musing to `continue`.
    - `abandon` → unguarded; no advisor, the draft passes straight through.
-3. The UI (`streamlit_app/streamlit_main.py`) streams the reply (typewriter); a terminal action
-   (`book`/`abandon`) locks the chat and offers a reset. It caps user turns at `MAX_USER_MESSAGES`
-   (a public-demo cost ceiling).
+3. The UI (`streamlit_app/streamlit_main.py`) streams the reply (typewriter) and renders a fresh
+   `recommend`'s packages as bookable cards — "Book this" commits deterministically (no LLM, no
+   Booking Advisor) and shows a rich confirmation with the package's real details. A terminal action
+   (`book`/`abandon`) locks the chat and offers a reset. The sidebar's **🐞 Debug** toggle reveals each
+   turn's `trace` in a collapsed expander under its reply (every assistant message stores its own trace,
+   so the trail covers the whole conversation, not just the last turn). It caps user turns at
+   `MAX_USER_MESSAGES` (a public-demo cost ceiling).
 
 ### Invariants that shape everything
 
