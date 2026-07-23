@@ -1,9 +1,11 @@
 # Trip Concierge — v2 plan (GUI)
 
 Personal working doc, same spirit as [PLAN.md](PLAN.md) (the v1 roadmap). This captures the **v2**
-direction agreed in the 2026-07-02 ideation session. It is a set of committed *directions* with open
-questions still to resolve — not yet a build sequence. The next session turns each idea below into
-build steps and settles its open questions.
+direction agreed in the 2026-07-02 ideation session: the four ideas below, their open questions and how
+each was resolved, and the [build sequence](#build-sequence) they became.
+
+**Status: v2 is complete** — all five build steps are marked *done* and merged to `main` (step 5, the
+debug trail, landed 2026-07-23). Everything below is kept as the record of what was decided and why.
 
 ## Scope constraint
 
