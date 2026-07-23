@@ -132,7 +132,8 @@ file — see [`DEPLOY.md`](DEPLOY.md) for the full guide.
 ## 7. Component map (what runs what)
 
 ```text
-streamlit_app/streamlit_main.py     UI → calls get_concierge_response per turn
+streamlit_app/streamlit_main.py     UI → calls get_concierge_response per turn; the sidebar's
+                                      🐞 Debug toggle shows each turn's trace under its reply
 app/main.py                         get_concierge_response(messages, reference_date=None)
                                       → ConciergeTurn (unpacks to (action, reply)); routes to
                                       one advisor, which may demote

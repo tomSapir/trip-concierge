@@ -163,10 +163,17 @@ so it precedes all three.
      package object, so it keeps the generic confirmation for now — asymmetry noted; a later step could
      resolve the option index to a row.
 
-5. **Debug trail (idea 2)** — `streamlit_main.py`. Always-visible sidebar `st.toggle("🐞 Debug")`. Store
+5. **Debug trail (idea 2)** — *done* — `streamlit_main.py`. Always-visible sidebar `st.toggle("🐞 Debug")`. Store
    each turn's `trace` on its stored message dict (extend `{"role", "content"}` → `+ "trace"`), and when
    the toggle is on render a collapsed `st.expander("🐞 trace")` under each assistant message: original →
    final action (+ demotion reason), route, retrieved chunks (source + one-line snippet), and model.
+   Landed as `_trace_expander(trace)`, called from both the replay loop (`msg.get("trace")` — the greeting
+   and user turns carry none) and the just-streamed turn (not yet in `session_state`, so the replay loop
+   can't reach it). Verified live: a Kyoto guide question showed `continue` / `destination_advisor` /
+   4 chunks (`Kyoto.pdf`, `Rome.pdf`, `Bali.pdf` + snippets) / `gpt-4.1`; an unmeetable budget showed
+   `recommend → continue — demoted` with the Budget Advisor's reason; flipping the toggle off hid every
+   trail, on revealed the whole conversation's. The extra message key is inert in the pipeline — all four
+   agents project `m["role"]` / `m["content"]` only.
 
 ## Notes for the build session
 

@@ -32,6 +32,13 @@ st.set_page_config(page_title="Trip Concierge", page_icon="✈️")
 st.title("✈️ Trip Concierge")
 st.caption("Tell me your vibe, dates, and budget — I'll find real trip packages and book the one you pick.")
 
+# Always-visible debug switch — deliberately left on the public deploy (the reasoning trail is
+# the demo, not a leak). Read once per run; every trace expander below is gated on it.
+DEBUG = st.sidebar.toggle(
+    "🐞 Debug", value=False,
+    help="Show the reasoning trail under each reply: the action the Trip Agent picked, the "
+         "advisor that checked it, why it was demoted, and what the guides retrieved.")
+
 
 def _reset():
     """Start a fresh conversation, seeded with the concierge's greeting."""
@@ -86,6 +93,41 @@ def _offer_cards():
                           width="stretch", on_click=_book_package, args=(pkg,))
 
 
+def _trace_expander(trace):
+    """Render one turn's reasoning trail as a collapsed expander under its assistant message.
+
+    `trace` is the dict app/main.py assembles per route (see its docstring). Always present:
+    original_action, final_action, route. Present per outcome: `reason` (why an advisor demoted),
+    `model`, and `chunks` (destination_advisor only — already reduced at the seam to
+    {"source", "snippet"} dicts, never raw LangChain Documents).
+
+    No-ops when the toggle is off or the message carries no trace (the seeded greeting doesn't).
+    """
+    if not DEBUG or not trace:
+        return
+    with st.expander("🐞 trace"):
+        original, final = trace["original_action"], trace["final_action"]
+        if original == final:
+            st.markdown(f"**Action** · `{original}`")
+        else:
+            # The two differ exactly when an advisor demoted — the headline of the whole trail.
+            st.markdown(f"**Action** · `{original}` → `{final}` — demoted")
+        if trace.get("reason"):
+            st.markdown(f"**Why** · {trace['reason']}")
+        # No route means no advisor ran: `abandon` fires straight from the seam.
+        st.markdown(f"**Route** · `{trace['route']}`" if trace.get("route")
+                    else "**Route** · none — `abandon` is unguarded")
+        chunks = trace.get("chunks")
+        if chunks:
+            st.markdown(f"**Retrieved** · {len(chunks)} guide chunks")
+            for chunk in chunks:
+                # metadata["source"] is the guide's path; the filename is the readable part.
+                source = pathlib.Path(chunk["source"]).name if chunk.get("source") else "guide"
+                st.markdown(f"- **{source}** — {chunk['snippet']}…")
+        if trace.get("model"):
+            st.markdown(f"**Model** · `{trace['model']}`")
+
+
 def _starter_chips():
     """On a fresh conversation, offer clickable openers seeded from the registry so a chip
     can never name an out-of-set city. A click stages its prompt as the first user turn."""
@@ -102,10 +144,13 @@ def _starter_chips():
 if "messages" not in st.session_state:
     _reset()
 
-# Replay the conversation so far.
+# Replay the conversation so far. Assistant messages carry the trace of the turn that produced
+# them, so flipping the toggle reveals the trail for the WHOLE conversation, not just the last turn.
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
+        # .get(), not indexing: user messages and the seeded greeting carry no trace key.
+        _trace_expander(msg.get("trace"))
 
 if st.session_state.locked:
     # Terminal: show the outcome and a reset button instead of the chat input.
@@ -155,11 +200,16 @@ else:
                 with st.spinner("Thinking…"):
                     turn = get_concierge_response(st.session_state.messages)
                 st.write_stream(_typewriter(turn.reply))
+                # This turn isn't in session_state yet, so the replay loop above never saw it —
+                # render its trace here or the newest turn would be the one you can't inspect.
+                _trace_expander(turn.trace)
             except Exception as e:
                 st.error(f"Something went wrong: {e}")
                 st.stop()  # leave the turn un-recorded so the user can retry
 
-        st.session_state.messages.append({"role": "assistant", "content": turn.reply})
+        # The stored message grows a "trace" key: what the pipeline did, kept for later replays.
+        st.session_state.messages.append({"role": "assistant", "content": turn.reply,
+                                          "trace": turn.trace})
 
         # A fresh recommend stages its rows as the standing offer (deduped by id — a compare
         # turn can return the same package twice); any other turn retires a stale offer.
