@@ -94,8 +94,9 @@ not broken*.
 **Trace**:
 The per-turn reasoning trail inside a **ConciergeTurn**: the Trip Agent's original
 **Action** versus the advisor's final one, which advisor ran (the route), why a
-demotion happened, the retrieved guide chunks, and the model that answered. Powers
-the v2 debug trail; nothing in the pipeline reads it back.
+demotion happened, the retrieved guide chunks, and the model that answered. The UI
+renders it under each assistant reply when the sidebar's **🐞 Debug** toggle is on;
+nothing in the pipeline reads it back.
 
 ## Flagged ambiguities
 

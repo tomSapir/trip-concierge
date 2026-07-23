@@ -209,6 +209,10 @@ Themed chat with typewriter streaming. **Both** terminal actions lock the chat a
    `APP_PASSWORD` gate was added then removed by preference).
 9. **Polish + README sync** — error handling, README in lockstep (NO genai mention).
 
+The v2 GUI roadmap is a separate doc, [`PLAN-v2.md`](PLAN-v2.md), and is **complete** (starter chips,
+result-object seam, images, package cards, debug trail — all merged and deployed). Step 9 above is the
+one v1 item still open.
+
 ## Resolved this session (2026-06-22 grilling)
 
 1. **4 actions, not 3.** `book` = commitment only; `abandon` is a separate, unguarded terminal action.
